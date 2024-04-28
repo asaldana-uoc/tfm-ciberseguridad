@@ -15,6 +15,6 @@ output "private_subnet_ids" {
 
 output "nat_gateway_ip" {
   description = "Dirección IP de la NAT Gateway"
-  value       = aws_nat_gateway.this[0].public_ip
+  value       = try(aws_nat_gateway.this[0].public_ip, null)
 }
 

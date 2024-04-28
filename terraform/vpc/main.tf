@@ -60,7 +60,7 @@ resource "aws_subnet" "public" {
   cidr_block              = each.value.cidr_block
   vpc_id                  = aws_vpc.this.id
   availability_zone       = each.value.name
-  map_public_ip_on_launch = try(each.value.public_ip_on_launch, true)
+  map_public_ip_on_launch = try(each.value.public_ip_on_launch, false)
 
   tags = {
     Name                     = format("%s-public-subnet-%s", local.vpc_name, each.value.name)
@@ -117,7 +117,7 @@ resource "aws_route_table" "private" {
 }
 
 resource "aws_route_table_association" "private" {
-  for_each       = var.private_subnets
+  for_each       = { for k, v in var.private_subnets : k => v if var.create_nat_gateway }
   subnet_id      = aws_subnet.private[each.key].id
   route_table_id = aws_route_table.private[0].id
 }

@@ -18,6 +18,12 @@ variable "cluster_subnets_ids" {
   type        = list(string)
 }
 
+variable "cluster_internal_ipv4_cidr" {
+  description = "Direccionamiento de red interno del clúster de Kubernetes"
+  type        = string
+  default     = null
+}
+
 variable "cluster_endpoint_private_access" {
   description = "Variable de tipo boolean para definir si el acceso a través de direccionamiento privado al API Server de EKS está permitido"
   type        = bool
@@ -31,13 +37,19 @@ variable "cluster_endpoint_public_access" {
 variable "cluster_endpoint_public_allowed_cidrs" {
   description = "Lista de direcciones públicas permitidas a acceder al API Server de EKS si la variable `cluster_endpoint_public_access` es `true`"
   type        = list(string)
-  default = null
+  default     = null
 }
 
 variable "cluster_security_group_ids" {
   description = "Lista de identificadores de security group para las ENI que EKS crea para la comunicación entre workers y control plane"
   type        = list(string)
   default     = []
+}
+
+variable "cluster_vpc_cni_addon_version" {
+  description = "Version del addon VPC CNI para EKS"
+  type        = string
+  default     = null
 }
 
 variable "cloudwatch_log_retention_in_days" {
@@ -53,8 +65,11 @@ variable "cloudwatch_log_group_class" {
 }
 
 variable "workers_attachment_policies" {
-  type    = list(string)
-  default = ["AmazonEKSWorkerNodePolicy", "AmazonEKS_CNI_Policy", "AmazonEC2ContainerRegistryReadOnly", "AmazonSSMManagedInstanceCore"]
+  type = list(string)
+  default = [
+    "AmazonEKSWorkerNodePolicy", "AmazonEKS_CNI_Policy", "AmazonEC2ContainerRegistryReadOnly",
+    "AmazonSSMManagedInstanceCore"
+  ]
 }
 
 variable "workers_subnets_ids" {

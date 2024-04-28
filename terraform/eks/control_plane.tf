@@ -12,9 +12,9 @@ data "aws_iam_policy_document" "cluster_assume_role_policy" {
 
 resource "aws_cloudwatch_log_group" "cluster" {
 
-  name            = "/aws/eks/${local.cluster_name}/cluster"
+  name              = "/aws/eks/${local.cluster_name}/cluster"
   retention_in_days = var.cloudwatch_log_retention_in_days
-  log_group_class = var.cloudwatch_log_group_class
+  log_group_class   = var.cloudwatch_log_group_class
 
   tags = { Name = "/aws/eks/${local.cluster_name}/cluster" }
 }
@@ -31,7 +31,7 @@ resource "aws_iam_role" "cluster" {
     name = local.cluster_iam_role_name
 
     policy = jsonencode({
-      Version   = "2012-10-17"
+      Version = "2012-10-17"
       Statement = [
         {
           Action   = ["logs:CreateLogGroup"]
@@ -69,6 +69,18 @@ resource "aws_eks_cluster" "this" {
     security_group_ids      = var.cluster_security_group_ids
   }
 
+  encryption_config {
+    provider {
+      key_arn = aws_kms_key.cluster_encryption.arn
+    }
+    resources = ["secrets"]
+  }
+
+  kubernetes_network_config {
+    service_ipv4_cidr = var.cluster_internal_ipv4_cidr
+    ip_family         = "ipv4"
+  }
+
   tags = {
     Name = local.cluster_name
   }
@@ -77,4 +89,100 @@ resource "aws_eks_cluster" "this" {
     aws_iam_role_policy_attachment.cluster,
     aws_cloudwatch_log_group.cluster,
   ]
+}
+
+resource "aws_eks_addon" "vpc_cni" {
+  cluster_name  = aws_eks_cluster.this.name
+  addon_name    = "vpc-cni"
+  addon_version = var.cluster_vpc_cni_addon_version
+
+  configuration_values = jsonencode({
+    enableNetworkPolicy = "true"
+  })
+}
+
+resource "aws_kms_key" "cluster_encryption" {
+  description         = "Clave KMS para el cifrado de los secrets del cluster EKS"
+  policy              = data.aws_iam_policy_document.kms_key_policy.json
+  enable_key_rotation = true
+}
+
+resource "aws_kms_alias" "cluster_encryption" {
+  name          = "alias/eks/${local.cluster_name}"
+  target_key_id = aws_kms_key.cluster_encryption.id
+}
+
+data "aws_caller_identity" "current" {}
+
+data "aws_iam_policy_document" "kms_key_policy" {
+  statement {
+    sid = "KMSKeyAdmins"
+    actions = [
+      "kms:Create*",
+      "kms:Describe*",
+      "kms:Enable*",
+      "kms:List*",
+      "kms:Put*",
+      "kms:Update*",
+      "kms:Revoke*",
+      "kms:Disable*",
+      "kms:Get*",
+      "kms:Delete*",
+      "kms:ScheduleKeyDeletion",
+      "kms:CancelKeyDeletion",
+      "kms:Decrypt",
+      "kms:DescribeKey",
+      "kms:Encrypt",
+      "kms:ReEncrypt*",
+      "kms:GenerateDataKey*",
+      "kms:TagResource"
+    ]
+    principals {
+      type = "AWS"
+      identifiers = [
+        "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root",
+        data.aws_caller_identity.current.arn
+      ]
+    }
+    resources = ["*"]
+  }
+
+  statement {
+    actions = [
+      "kms:Encrypt",
+      "kms:Decrypt",
+      "kms:ReEncrypt*",
+      "kms:GenerateDataKey*",
+      "kms:DescribeKey"
+    ]
+    principals {
+      type        = "Service"
+      identifiers = ["eks.amazonaws.com"]
+    }
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_policy" "cluster_encryption" {
+  name        = format("%s-%s", local.cluster_name, "encryption-iam-policy")
+  description = "Política IAM para el cifrado de los secrets de EKS"
+  policy      = data.aws_iam_policy_document.cluster_encryption.json
+}
+
+data "aws_iam_policy_document" "cluster_encryption" {
+  statement {
+    actions = [
+      "kms:Encrypt",
+      "kms:Decrypt",
+      "kms:ListGrants",
+      "kms:DescribeKey"
+    ]
+    resources = [aws_kms_key.cluster_encryption.arn]
+  }
+}
+
+# Damos permisos al rol asignado al clúster de EKS para utilizar la clave KMS
+resource "aws_iam_role_policy_attachment" "cluster_encryption" {
+  policy_arn = aws_iam_policy.cluster_encryption.arn
+  role       = aws_iam_role.cluster.name
 }
