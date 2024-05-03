@@ -7,15 +7,18 @@ locals {
   resources_name = "tfm-asaldana"
 }
 
+# Creación de la topología de red utilizando el módulo vpc
 module "vpc" {
   source         = "./vpc"
   resources_name = local.resources_name
 
+  # Direccionamiento IP elegido para el VPC
   vpc_cidr             = "172.16.0.0/20"
   enable_dns_support   = true
   enable_dns_hostnames = true
   create_nat_gateway   = true
 
+  # Distribución de las subredes públicas dentro del VPC
   public_subnets = {
     az1 = {
       name       = "eu-south-2a",
@@ -31,6 +34,7 @@ module "vpc" {
     }
   }
 
+  # Distribución de las subredes privadas dentro del VPC
   private_subnets = {
     az1 = {
       name       = "eu-south-2a"
@@ -47,35 +51,47 @@ module "vpc" {
   }
 }
 
+# Recurso para obtener la IP actual de la persona o sistema que ejecuta terraform para que pueda acceder al endpoint del API Server
 data "http" "my_ip" {
   url = "https://curlmyip.net"
 }
 
+# Creación del clúster EKS y el managed-node group
 module "eks" {
   source         = "./eks"
   resources_name = local.resources_name
 
-  cluster_enabled_log_types             = ["api", "audit", "authenticator", ]
-  cluster_version                       = "1.29"
-  cluster_subnets_ids                   = concat(module.vpc.private_subnet_ids, module.vpc.public_subnet_ids)
-  cluster_endpoint_private_access       = true
-  cluster_endpoint_public_access        = true
+  cluster_enabled_log_types = ["api", "audit", "authenticator"]
+  # Versión del clúster EKS https://docs.aws.amazon.com/eks/latest/userguide/kubernetes-versions.html
+  cluster_version = "1.29"
+  # El control plane se desplegará en todas las subredes (privadas y públicas) y el endpoint será accesible internamente y públicamente
+  cluster_subnets_ids             = concat(module.vpc.private_subnet_ids, module.vpc.public_subnet_ids)
+  cluster_endpoint_private_access = true
+  cluster_endpoint_public_access  = true
+  # Restringimos el acceso al endpoint del API server a únicamente la dirección IP obtenidad con la llamada data.http.my_ip
   cluster_endpoint_public_allowed_cidrs = formatlist("%s/32", [chomp(data.http.my_ip.response_body)])
 
-  # https://docs.aws.amazon.com/eks/latest/userguide/managing-vpc-cni.html
+  # Versión del plugin VPC CNI a utilizar
+  # Documentación https://docs.aws.amazon.com/eks/latest/userguide/managing-vpc-cni.html
   cluster_vpc_cni_addon_version = "v1.18.0-eksbuild.1"
 
+  # AMI BOTTLEROCKET para los worker node
   # https://docs.aws.amazon.com/eks/latest/userguide/retrieve-ami-id-bottlerocket.html
-  workers_ami_type       = "BOTTLEROCKET_x86_64"
-  workers_subnets_ids    = module.vpc.private_subnet_ids
+  workers_ami_type = "BOTTLEROCKET_x86_64"
+  # Los worker nodes se desplegarán únicamente en las subredes privadas creadas con el módulo vpc anterior
+  workers_subnets_ids = module.vpc.private_subnet_ids
+  # Tipo de instancias permitidas para tener en el grupo de nodos de EKS
   workers_instances_type = ["m7i.large", "t3.large"]
   workers_disk_size      = 20
-  workers_capacity_type  = "SPOT"
-  workers_desired_size   = 1
-  workers_min_size       = 1
-  workers_max_size       = 3
+  # Instancia de tipo SPOT, más económica que las ON_DEMMAND pero que puede ser apagada por AWS
+  workers_capacity_type = "SPOT"
+  # Configuraremos el grupo para que haya al menos una instancia en ejecución
+  workers_desired_size = 1
+  workers_min_size     = 1
+  workers_max_size     = 3
 }
 
+# Módulo para crear un repositorio ECR para almacenar imágenes de contenedores
 module "ecr" {
   source          = "./ecr"
   repository_name = "debug-tools"

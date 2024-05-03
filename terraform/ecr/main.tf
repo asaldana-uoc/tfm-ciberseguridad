@@ -1,3 +1,4 @@
+# Recurso para crear un repositorio ECR para almacenar imágenes de contenedores
 resource "aws_ecr_repository" "this" {
   name                 = var.repository_name
   image_tag_mutability = var.image_tag_mutability
