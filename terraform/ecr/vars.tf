@@ -9,7 +9,6 @@ variable "image_tag_mutability" {
   default     = "MUTABLE"
 }
 
-
 variable "image_scanning_on_push" {
   description = "Parámetro para activar o no la ejecución básica de escaneo de la imagen"
   type        = bool
