@@ -89,13 +89,17 @@ module "eks" {
   workers_desired_size = 1
   workers_min_size     = 1
   workers_max_size     = 3
+
+  depends_on = [module.vpc]
 }
 
-# Módulo para crear un repositorio ECR para almacenar imágenes de contenedores
+# Módulo para crear un repositorio ECR donde almacenar imágenes de contenedores en AWS
 module "ecr" {
   source          = "./ecr"
   repository_name = "debug-tools"
   force_delete    = true
+
+  depends_on = [module.eks]
 }
 
 terraform {
