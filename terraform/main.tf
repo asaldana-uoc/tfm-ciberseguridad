@@ -76,6 +76,12 @@ module "eks" {
   workers_max_size       = 3
 }
 
+module "ecr" {
+  source          = "./ecr"
+  repository_name = "debug-tools"
+  force_delete    = true
+}
+
 terraform {
   required_version = ">= 1.8"
 
