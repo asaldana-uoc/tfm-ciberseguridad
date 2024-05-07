@@ -1,0 +1,23 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: mandatory-labels
+spec:
+  validationFailureAction: Enforce
+  rules:
+    - name: mandatory-labels
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+              namespaces:
+                - "tfm-*"
+      validate:
+        message: "Labels 'Team', 'CostCenter' and 'Environment' are required to deploy the Pod"
+        pattern:
+          metadata:
+            labels:
+              Team: "?*"
+              CostCenter: "?*"
+              Environment: "?*"
