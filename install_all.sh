@@ -13,3 +13,5 @@ helm install kyverno kyverno/kyverno  --version 3.2.1 -n kyverno --create-namesp
 --set cleanupController.replicas=2 \
 --set reportsController.replicas=2
 
+# Apply all Kyverno policies
+kubectl apply -f kyverno/policies/workload
