@@ -102,6 +102,10 @@ module "ecr" {
   depends_on = [module.eks]
 }
 
+output "debug_image_url" {
+  value = module.ecr.repository_url
+}
+
 terraform {
   required_version = ">= 1.8"
 

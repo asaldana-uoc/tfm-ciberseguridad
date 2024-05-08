@@ -1,0 +1,58 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: test-networking-ns1
+  labels:
+    name: test-networking-ns1
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-networking-pod1
+  namespace: test-networking-ns1
+spec:
+  containers:
+  - name: debug-tools1
+    image: XXXXXXXXXXXX.dkr.ecr.eu-south-2.amazonaws.com/debug-tools
+    command:
+      - "sleep"
+      - "86400"
+    securityContext:
+      readOnlyRootFilesystem: true
+    resources:
+      limits:
+        memory: "128Mi"
+        cpu: "0.25"
+      requests:
+        memory: "128Mi"
+        cpu: "0.25"
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: test-networking-ns2
+  labels:
+    name: test-networking-ns2
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-networking-pod2
+  namespace: test-networking-ns2
+spec:
+  containers:
+  - name: debug-tools2
+    image: XXXXXXXXXXXX.dkr.ecr.eu-south-2.amazonaws.com/debug-tools
+    command:
+      - "sleep"
+      - "86400"
+    securityContext:
+      readOnlyRootFilesystem: true
+    resources:
+      limits:
+        memory: "128Mi"
+        cpu: "0.25"
+      requests:
+        memory: "128Mi"
+        cpu: "0.25"
+
