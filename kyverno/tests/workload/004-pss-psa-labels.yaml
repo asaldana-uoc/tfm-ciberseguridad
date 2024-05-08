@@ -8,7 +8,7 @@ metadata:
 apiVersion: v1
 kind: Pod
 metadata:
-  name: root-pod
+  name: root-container-demo
   namespace: test
 spec:
   containers:

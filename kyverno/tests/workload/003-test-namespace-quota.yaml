@@ -8,7 +8,7 @@ metadata:
 apiVersion: v1
 kind: Pod
 metadata:
-  name: resources-demo
+  name: quotas-demo
   namespace: test
 spec:
   containers:
