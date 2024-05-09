@@ -93,6 +93,10 @@ module "eks" {
   depends_on = [module.vpc]
 }
 
+output "eks_cluster_name" {
+  value = module.eks.cluster_name
+}
+
 # Módulo para crear un repositorio ECR donde almacenar imágenes de contenedores en AWS
 module "ecr" {
   source          = "./ecr"
@@ -118,8 +122,25 @@ module "secrets" {
   depends_on = [module.eks]
 }
 
-output "iam_role_arn" {
+output "secrets_iam_role_arn" {
   value = module.secrets.iam_role_arn
+}
+
+# Módulo para crear un IAM role para que Falco pueda consultar los logs de EKS en CloudWatch
+module "falco" {
+  source                      = "./falco"
+  resources_name              = format("%s-%s", local.resources_name, "falco")
+  openid_connect_provider_id  = module.eks.openid_connect_provider_id
+  openid_connect_provider_url = module.eks.openid_connect_provider_url
+  kubernetes_namespace        = "falco"
+  kubernetes_service_account  = "falco"
+  cloudwatch_log_group        = module.eks.cloudwatch_log_group
+
+  depends_on = [module.eks]
+}
+
+output "falco_iam_role_arn" {
+  value = module.falco.iam_role_arn
 }
 
 terraform {

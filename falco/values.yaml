@@ -1,0 +1,55 @@
+serviceAccount:
+  create: true
+  annotations:
+    - eks.amazonaws.com/role-arn: arn:aws:iam::XXXXXXXXXXXX:role/tfm-asaldana-falco-role
+
+falco:
+  rules_file:
+    - /etc/falco/k8s_audit_rules.yaml
+    - /etc/falco/rules.d
+  plugins:
+    - name: k8saudit-eks
+      library_path: libk8saudit-eks.so
+      init_config:
+        shift: 10
+        polling_interval: 10
+        use_async: false
+        buffer_size: 500
+      open_params: "tfm-asaldana-eks-cluster"
+    - name: json
+      library_path: libjson.so
+      init_config: ""
+  load_plugins: [k8saudit-eks, json]
+
+falcosidekick:
+  enabled: true
+
+driver:
+  enabled: false
+collectors:
+  enabled: false
+
+controller:
+  kind: deployment
+  deployment:
+    replicas: 1
+
+falcoctl:
+  indexes:
+  - name: falcosecurity
+    url: https://falcosecurity.github.io/falcoctl/index.yaml
+  artifact:
+    install:
+      enabled: true
+    follow:
+      enabled: true
+  config:
+    artifact:
+      allowedTypes:
+        - plugin
+        - rulesfile
+      install:
+        resolveDeps: false
+        refs: [k8saudit-rules:0, k8saudit-eks:0, json:0]
+      follow:
+        refs: [k8saudit-rules:0]
