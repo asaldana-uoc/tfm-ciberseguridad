@@ -9,14 +9,14 @@ locals {
 
 # Creación de la topología de red utilizando el módulo vpc
 module "vpc" {
-  source         = "./vpc"
+  source = "./vpc"
   resources_name = local.resources_name
 
   # Direccionamiento IP elegido para el VPC
   vpc_cidr             = "172.16.0.0/20"
   enable_dns_support   = true
   enable_dns_hostnames = true
-  create_nat_gateway   = true
+  create_nat_gateway = true
 
   # Distribución de las subredes públicas dentro del VPC
   public_subnets = {
@@ -65,9 +65,9 @@ module "eks" {
   # Versión del clúster EKS https://docs.aws.amazon.com/eks/latest/userguide/kubernetes-versions.html
   cluster_version = "1.29"
   # El control plane se desplegará en todas las subredes (privadas y públicas) y el endpoint será accesible internamente y públicamente
-  cluster_subnets_ids             = concat(module.vpc.private_subnet_ids, module.vpc.public_subnet_ids)
-  cluster_endpoint_private_access = true
-  cluster_endpoint_public_access  = true
+  cluster_subnets_ids                   = concat(module.vpc.private_subnet_ids, module.vpc.public_subnet_ids)
+  cluster_endpoint_private_access       = true
+  cluster_endpoint_public_access = true
   # Restringimos el acceso al endpoint del API server a únicamente la dirección IP obtenidad con la llamada data.http.my_ip
   cluster_endpoint_public_allowed_cidrs = formatlist("%s/32", [chomp(data.http.my_ip.response_body)])
 
@@ -82,13 +82,13 @@ module "eks" {
   workers_subnets_ids = module.vpc.private_subnet_ids
   # Tipo de instancias permitidas para tener en el grupo de nodos de EKS
   workers_instances_type = ["m7i.large", "t3.large"]
-  workers_disk_size      = 20
+  workers_disk_size = 20
   # Instancia de tipo SPOT, más económica que las ON_DEMMAND pero que puede ser apagada por AWS
   workers_capacity_type = "SPOT"
   # Configuraremos el grupo para que haya al menos una instancia en ejecución
-  workers_desired_size = 1
-  workers_min_size     = 1
-  workers_max_size     = 3
+  workers_desired_size   = 1
+  workers_min_size       = 1
+  workers_max_size       = 3
 
   depends_on = [module.vpc]
 }
@@ -104,6 +104,21 @@ module "ecr" {
 
 output "debug_image_url" {
   value = module.ecr.repository_url
+}
+
+module "secrets" {
+  source                      = "./secrets"
+  resources_name              = local.resources_name
+  openid_connect_provider_url = module.eks.openid_connect_provider_url
+  openid_connect_provider_arn = module.eks.openid_connect_provider_arn
+  kubernetes_namespace        = "test-secrets-ns"
+  kubernetes_service_account = "test-secrets-sa"
+
+  depends_on = [module.eks]
+}
+
+output "iam_role_arn" {
+  value = module.secrets.iam_role_arn
 }
 
 terraform {

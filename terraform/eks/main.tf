@@ -1,10 +1,11 @@
 ## Variables locales usadas para los nombres de los recursos a crear
 locals {
-  cluster_name          = format("%s-%s", var.resources_name, "eks-cluster")
-  cluster_iam_role_name = format("%s-%s", local.cluster_name, "iam-role")
-  workers_name          = format("%s-%s", var.resources_name, "eks-workers")
-  workers_iam_role_name = format("%s-%s", local.workers_name, "iam-role")
-  workers_group_name    = format("%s-%s", local.workers_name, "group")
+  cluster_name                  = format("%s-%s", var.resources_name, "eks-cluster")
+  cluster_iam_role_name         = format("%s-%s", local.cluster_name, "iam-role")
+  workers_name                  = format("%s-%s", var.resources_name, "eks-workers")
+  workers_iam_role_name         = format("%s-%s", local.workers_name, "iam-role")
+  workers_group_name            = format("%s-%s", local.workers_name, "group")
+  identity_provider_config_name = format("%s-%s", var.resources_name, "idp")
 }
 
 #### Recursos para el Control Plane ####
@@ -42,7 +43,7 @@ resource "aws_iam_role" "cluster" {
     name = local.cluster_iam_role_name
 
     policy = jsonencode({
-      Version = "2012-10-17"
+      Version   = "2012-10-17"
       Statement = [
         {
           Action   = ["logs:CreateLogGroup"]
@@ -111,8 +112,8 @@ resource "aws_eks_cluster" "this" {
 # Recurso para instalar el plugin VPC CNI en el clúster EKS creado
 # Documentación https://github.com/asaldana-uoc/tfm-ciberseguridad/tree/34cecf89bf9374f5e02f93d62ddbb03fd40af23b/terraform/vpc
 resource "aws_eks_addon" "vpc_cni" {
-  cluster_name  = aws_eks_cluster.this.name
-  addon_name    = "vpc-cni"
+  cluster_name = aws_eks_cluster.this.name
+  addon_name   = "vpc-cni"
   addon_version = var.cluster_vpc_cni_addon_version
 
   # Configuración específica del plugin VPC CNI para activar el uso de NetworkPolicies
@@ -140,7 +141,7 @@ data "aws_caller_identity" "current" {}
 # Se establecen las políticas de acceso al servicio KMS
 data "aws_iam_policy_document" "kms_key_policy" {
   statement {
-    sid = "KMSKeyAdmins"
+    sid     = "KMSKeyAdmins"
     actions = [
       "kms:Create*",
       "kms:Describe*",
@@ -162,7 +163,7 @@ data "aws_iam_policy_document" "kms_key_policy" {
       "kms:TagResource"
     ]
     principals {
-      type = "AWS"
+      type        = "AWS"
       identifiers = [
         "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root",
         data.aws_caller_identity.current.arn
@@ -287,5 +288,28 @@ resource "aws_eks_node_group" "workers" {
     create = "10m"
     update = "10m"
     delete = "10m"
+  }
+}
+
+data "tls_certificate" "this" {
+  url = aws_eks_cluster.this.identity[0].oidc[0].issuer
+}
+
+resource "aws_iam_openid_connect_provider" "oidc_provider" {
+  client_id_list  = ["sts.amazonaws.com"]
+  thumbprint_list = [data.tls_certificate.this.certificates[0].sha1_fingerprint]
+  url             = aws_eks_cluster.this.identity[0].oidc[0].issuer
+
+  tags = {
+    Name = local.cluster_name
+  }
+}
+
+resource "aws_eks_identity_provider_config" "this" {
+  cluster_name = aws_eks_cluster.this.name
+  oidc {
+    client_id                     = substr(aws_eks_cluster.this.identity.0.oidc.0.issuer, -32, -1)
+    identity_provider_config_name = local.identity_provider_config_name
+    issuer_url                    = "https://${aws_iam_openid_connect_provider.oidc_provider.url}"
   }
 }
