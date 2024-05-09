@@ -25,3 +25,7 @@ helm repo update
 helm install csi-secrets-store secrets-store-csi-driver/secrets-store-csi-driver --version 1.4.3 -n kube-system
 helm install secrets-provider-aws aws-secrets-manager/secrets-store-csi-driver-provider-aws --version 0.3.8 -n kube-system
 
+# Instalar Falco en EKS
+helm repo add falcosecurity https://falcosecurity.github.io/charts
+helm repo update
+#helm install falco falcosecurity/falco --version 4.3.0 --create-namespace -n falco -f falco/values.yaml

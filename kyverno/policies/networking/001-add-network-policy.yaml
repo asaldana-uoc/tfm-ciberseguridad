@@ -23,6 +23,15 @@ spec:
       - resources:
           kinds:
           - Namespace
+    exclude:
+      any:
+      - resources:
+          kinds:
+          - Namespace
+          names:
+          - kube-system
+          - kyverno
+          - falco
     generate:
       apiVersion: networking.k8s.io/v1
       kind: NetworkPolicy

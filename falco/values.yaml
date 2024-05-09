@@ -1,8 +1,3 @@
-serviceAccount:
-  create: true
-  annotations:
-    - eks.amazonaws.com/role-arn: arn:aws:iam::XXXXXXXXXXXX:role/tfm-asaldana-falco-role
-
 falco:
   rules_file:
     - /etc/falco/k8s_audit_rules.yaml
@@ -53,3 +48,8 @@ falcoctl:
         refs: [k8saudit-rules:0, k8saudit-eks:0, json:0]
       follow:
         refs: [k8saudit-rules:0]
+
+serviceAccount:
+  create: true
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::XXXXXXXXXXXX:role/tfm-asaldana-falco-role

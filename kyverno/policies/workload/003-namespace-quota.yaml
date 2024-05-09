@@ -21,6 +21,15 @@ spec:
       - resources:
           kinds:
           - Namespace
+    exclude:
+      any:
+      - resources:
+          kinds:
+          - Namespace
+          names:
+          - kube-system
+          - kyverno
+          - falco
     generate:
       apiVersion: v1
       kind: ResourceQuota
@@ -40,6 +49,15 @@ spec:
       - resources:
           kinds:
           - Namespace
+    exclude:
+      any:
+      - resources:
+          kinds:
+          - Namespace
+          names:
+          - kube-system
+          - kyverno
+          - falco
     generate:
       apiVersion: v1
       kind: LimitRange

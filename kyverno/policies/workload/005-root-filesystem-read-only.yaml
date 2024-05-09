@@ -24,6 +24,15 @@ spec:
       - resources:
           kinds:
           - Pod
+    exclude:
+      any:
+      - resources:
+          kinds:
+          - Namespace
+          names:
+          - kube-system
+          - kyverno
+          - falco
     validate:
       message: "Root filesystem must be read-only."
       pattern:

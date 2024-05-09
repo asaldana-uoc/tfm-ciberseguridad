@@ -28,12 +28,13 @@ spec:
           - Namespace
     exclude:
       any:
-        - resources:
-            kinds:
-              - Namespace
-            names:
-              - kube-system
-              - kyverno
+      - resources:
+          kinds:
+          - Namespace
+          names:
+          - kube-system
+          - kyverno
+          - falco
     mutate:
       patchStrategicMerge:
         metadata:
