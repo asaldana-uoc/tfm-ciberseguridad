@@ -106,6 +106,7 @@ output "debug_image_url" {
   value = module.ecr.repository_url
 }
 
+# Módulo para crear un secret en AWS Secret Manager y un rol IAM de AWS que permitirá a los pods de EKS acceder al secret almacenado
 module "secrets" {
   source                      = "./secrets"
   resources_name              = local.resources_name

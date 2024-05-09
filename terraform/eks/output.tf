@@ -9,9 +9,11 @@ output "cluster_name" {
 }
 
 output "openid_connect_provider_url" {
-  value = aws_iam_openid_connect_provider.oidc_provider.url
+  description = "URL del proveedor OIDC"
+  value       = aws_iam_openid_connect_provider.oidc_provider.url
 }
 
 output "openid_connect_provider_arn" {
-  value = aws_iam_openid_connect_provider.oidc_provider.arn
+  description = "Nombre del recurso de Amazon (ARN) del proveedor OIDC"
+  value       = aws_iam_openid_connect_provider.oidc_provider.arn
 }

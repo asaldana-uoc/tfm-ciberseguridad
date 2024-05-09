@@ -15,8 +15,14 @@ variable "secret_value" {
   default     = null
 }
 
+variable "secret_recovery_window_in_days" {
+  description = "Tiempo a preservar el secret creado después de ser eliminado. Si el valor es 0, se borra directament."
+  type        = number
+  default     = 0
+}
+
 variable "kubernetes_namespace" {
-  description = "Nombre del namespace donde crear Service Account"
+  description = "Nombre del namespace donde crear la Service Account"
   type        = string
 }
 
@@ -26,9 +32,11 @@ variable "kubernetes_service_account" {
 }
 
 variable "openid_connect_provider_url" {
-  type = string
+  description = "URL del proveedor OIDC del clúster EKS"
+  type        = string
 }
 
 variable "openid_connect_provider_arn" {
-  type = string
+  description = "Nombre del recurso de Amazon (ARN) del proveedor OIDC del clúster EKS"
+  type        = string
 }
