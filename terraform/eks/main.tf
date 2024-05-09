@@ -43,7 +43,7 @@ resource "aws_iam_role" "cluster" {
     name = local.cluster_iam_role_name
 
     policy = jsonencode({
-      Version   = "2012-10-17"
+      Version = "2012-10-17"
       Statement = [
         {
           Action   = ["logs:CreateLogGroup"]
@@ -112,8 +112,8 @@ resource "aws_eks_cluster" "this" {
 # Recurso para instalar el plugin VPC CNI en el clúster EKS creado
 # Documentación https://github.com/asaldana-uoc/tfm-ciberseguridad/tree/34cecf89bf9374f5e02f93d62ddbb03fd40af23b/terraform/vpc
 resource "aws_eks_addon" "vpc_cni" {
-  cluster_name = aws_eks_cluster.this.name
-  addon_name   = "vpc-cni"
+  cluster_name  = aws_eks_cluster.this.name
+  addon_name    = "vpc-cni"
   addon_version = var.cluster_vpc_cni_addon_version
 
   # Configuración específica del plugin VPC CNI para activar el uso de NetworkPolicies
@@ -141,7 +141,7 @@ data "aws_caller_identity" "current" {}
 # Se establecen las políticas de acceso al servicio KMS
 data "aws_iam_policy_document" "kms_key_policy" {
   statement {
-    sid     = "KMSKeyAdmins"
+    sid = "KMSKeyAdmins"
     actions = [
       "kms:Create*",
       "kms:Describe*",
@@ -163,7 +163,7 @@ data "aws_iam_policy_document" "kms_key_policy" {
       "kms:TagResource"
     ]
     principals {
-      type        = "AWS"
+      type = "AWS"
       identifiers = [
         "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root",
         data.aws_caller_identity.current.arn

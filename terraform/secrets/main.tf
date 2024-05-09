@@ -1,6 +1,6 @@
 resource "random_string" "secret" {
-  length           = 16
-  special          = false
+  length  = 16
+  special = false
 }
 
 resource "aws_secretsmanager_secret" "this" {
