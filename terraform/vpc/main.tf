@@ -81,7 +81,7 @@ resource "aws_subnet" "public" {
   map_public_ip_on_launch = try(each.value.public_ip_on_launch, false)
 
   tags = {
-    Name = format("%s-public-subnet-%s", local.vpc_name, each.value.name)
+    Name = format("%s-public-%s", local.vpc_name, each.value.name)
     # Etiqueta importante para permitir la creación de Load Balancer públicos utilizando objetos de Kubernetes
     # Documentación https://docs.aws.amazon.com/eks/latest/userguide/alb-ingress.html
     "kubernetes.io/role/elb" = 1
@@ -119,7 +119,7 @@ resource "aws_subnet" "private" {
   availability_zone = each.value.name
 
   tags = {
-    Name = format("%s-private-subnet-%s", local.vpc_name, each.value.name)
+    Name = format("%s-private-%s", local.vpc_name, each.value.name)
     # Etiqueta importante para permitir la creación de Load Balancer privados utilizando objetos de Kubernetes
     Type                              = "private"
     "kubernetes.io/role/internal-elb" = 1
