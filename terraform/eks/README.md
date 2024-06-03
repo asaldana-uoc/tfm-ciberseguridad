@@ -1,4 +1,3 @@
-<!-- BEGIN_TF_DOCS -->
 ## Requirements
 
 | Name | Version |
@@ -80,4 +79,3 @@ No modules.
 | <a name="output_openid_connect_provider_arn"></a> [openid\_connect\_provider\_arn](#output\_openid\_connect\_provider\_arn) | Nombre del recurso de Amazon (ARN) del proveedor OIDC |
 | <a name="output_openid_connect_provider_id"></a> [openid\_connect\_provider\_id](#output\_openid\_connect\_provider\_id) | ID del proveedor OIDC |
 | <a name="output_openid_connect_provider_url"></a> [openid\_connect\_provider\_url](#output\_openid\_connect\_provider\_url) | URL del proveedor OIDC |
-<!-- END_TF_DOCS -->
