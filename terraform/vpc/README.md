@@ -41,7 +41,7 @@ No modules.
 | <a name="input_enable_dns_support"></a> [enable\_dns\_support](#input\_enable\_dns\_support) | Variable de tipo booleana para decidir si las instancias del VPC pueden consultar el servidor DNS de Amazon | `bool` | `null` | no |
 | <a name="input_private_subnets"></a> [private\_subnets](#input\_private\_subnets) | Variable para definir la configuración de las subredes privadas del VPC. Es una variable de tipo map y los parámetros `cidr_block` y `name` son obligatorios. | `map(map(string))` | n/a | yes |
 | <a name="input_public_subnets"></a> [public\_subnets](#input\_public\_subnets) | Variable para definir la configuración de las subredes públicas del VPC. Es una variable de tipo map y requiere que contenga las claves `cidr_block` y `name`. El parámetro `public_ip_on_launch` es opcional. | `map(map(string))` | n/a | yes |
-| <a name="input_resources_name"></a> [resources\_name](#input\_resources\_name) | Prefijo que se añadirá al nombre de todos los recursos que se creen en este módulo para identificarlos fácilmente | `any` | n/a | yes |
+| <a name="input_resources_name"></a> [resources\_name](#input\_resources\_name) | Prefijo que se añadirá al nombre de todos los recursos que se creen en este módulo para identificarlos fácilmente | `string` | n/a | yes |
 | <a name="input_vpc_cidr"></a> [vpc\_cidr](#input\_vpc\_cidr) | Direccionamiento IP para el VPC | `string` | n/a | yes |
 
 ## Outputs

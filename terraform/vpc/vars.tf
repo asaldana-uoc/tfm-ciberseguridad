@@ -1,5 +1,6 @@
 variable "resources_name" {
   description = "Prefijo que se añadirá al nombre de todos los recursos que se creen en este módulo para identificarlos fácilmente"
+  type        = string
 }
 
 variable "vpc_cidr" {
