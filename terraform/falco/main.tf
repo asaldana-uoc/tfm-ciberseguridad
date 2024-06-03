@@ -1,3 +1,13 @@
+## Definimos la versión de las librerías para AWS que necesita este módulo
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.47"
+    }
+  }
+}
+
 data "aws_region" "current" {}
 data "aws_caller_identity" "current" {}
 

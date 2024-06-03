@@ -1,4 +1,14 @@
-## Variables locales usadas para los nombres de los recursos a crear
+## Definimos la versión de las librerías para AWS que necesita este módulo
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.47"
+    }
+  }
+}
+
+## Variables locales utilizadas en este módulo para definir los nombres de los recursos a crear
 locals {
   cluster_name                  = format("%s-%s", var.resources_name, "eks-cluster")
   cluster_iam_role_name         = format("%s-%s", local.cluster_name, "iam-role")

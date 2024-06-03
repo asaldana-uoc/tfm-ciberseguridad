@@ -1,3 +1,14 @@
+## Definimos la versión de las librerías para AWS que necesita este módulo
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.47"
+    }
+  }
+}
+
+## Variables locales utilizadas en este módulo para definir el nombre del VPC con un formato específico
 locals {
   vpc_name = format("%s-%s", var.resources_name, "vpc")
 }

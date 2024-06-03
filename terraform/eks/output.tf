@@ -1,5 +1,5 @@
 output "endpoint" {
-  description = "Endpoint del API Server"
+  description = "Endpoint del API Server del clúster EKS"
   value       = aws_eks_cluster.this.endpoint
 }
 

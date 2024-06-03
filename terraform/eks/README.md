@@ -1,13 +1,15 @@
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 
-No requirements.
+| Name | Version |
+|------|---------|
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 5.47 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | n/a |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | ~> 5.47 |
 | <a name="provider_tls"></a> [tls](#provider\_tls) | n/a |
 
 ## Modules
@@ -56,7 +58,7 @@ No modules.
 | <a name="input_cluster_vpc_cni_addon_version"></a> [cluster\_vpc\_cni\_addon\_version](#input\_cluster\_vpc\_cni\_addon\_version) | Version del addon VPC CNI para EKS | `string` | `null` | no |
 | <a name="input_resources_name"></a> [resources\_name](#input\_resources\_name) | Prefijo que se añadirá al nombre de todos los recursos que se creen en este módulo para identificarlos fácilmente | `string` | n/a | yes |
 | <a name="input_workers_ami_type"></a> [workers\_ami\_type](#input\_workers\_ami\_type) | Tipo de imagen base (sistema operativo) para crear los worker nodes | `string` | n/a | yes |
-| <a name="input_workers_attachment_policies"></a> [workers\_attachment\_policies](#input\_workers\_attachment\_policies) | n/a | `list(string)` | <pre>[<br>  "AmazonEKSWorkerNodePolicy",<br>  "AmazonEKS_CNI_Policy",<br>  "AmazonEC2ContainerRegistryReadOnly",<br>  "AmazonSSMManagedInstanceCore"<br>]</pre> | no |
+| <a name="input_workers_attachment_policies"></a> [workers\_attachment\_policies](#input\_workers\_attachment\_policies) | Políticas IAM predefinidas en AWS que se asignarán al rol IAM que se vincule con los worker nodes | `list(string)` | <pre>[<br>  "AmazonEKSWorkerNodePolicy",<br>  "AmazonEKS_CNI_Policy",<br>  "AmazonEC2ContainerRegistryReadOnly",<br>  "AmazonSSMManagedInstanceCore"<br>]</pre> | no |
 | <a name="input_workers_capacity_type"></a> [workers\_capacity\_type](#input\_workers\_capacity\_type) | Tipo de instancias según la disponibilidades que necesitemos. Valores admitidos son `ON_DEMAND` o `SPOT` | `string` | `"ON_DEMAND"` | no |
 | <a name="input_workers_desired_size"></a> [workers\_desired\_size](#input\_workers\_desired\_size) | Número deseado de workers nodes en ejecución | `number` | `1` | no |
 | <a name="input_workers_disk_size"></a> [workers\_disk\_size](#input\_workers\_disk\_size) | Tamaño del disco duro (EBS) de los worker nodes | `number` | `10` | no |
@@ -74,7 +76,7 @@ No modules.
 |------|-------------|
 | <a name="output_cloudwatch_log_group"></a> [cloudwatch\_log\_group](#output\_cloudwatch\_log\_group) | Nombre del grupo de CloudWatch donde se enviarán los logs |
 | <a name="output_cluster_name"></a> [cluster\_name](#output\_cluster\_name) | Nombre del clúster EKS |
-| <a name="output_endpoint"></a> [endpoint](#output\_endpoint) | Endpoint del API Server |
+| <a name="output_endpoint"></a> [endpoint](#output\_endpoint) | Endpoint del API Server del clúster EKS |
 | <a name="output_openid_connect_provider_arn"></a> [openid\_connect\_provider\_arn](#output\_openid\_connect\_provider\_arn) | Nombre del recurso de Amazon (ARN) del proveedor OIDC |
 | <a name="output_openid_connect_provider_id"></a> [openid\_connect\_provider\_id](#output\_openid\_connect\_provider\_id) | ID del proveedor OIDC |
 | <a name="output_openid_connect_provider_url"></a> [openid\_connect\_provider\_url](#output\_openid\_connect\_provider\_url) | URL del proveedor OIDC |

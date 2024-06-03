@@ -1,3 +1,13 @@
+## Definimos la versión de las librerías para AWS que necesita este módulo
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.47"
+    }
+  }
+}
+
 # Recurso para generar un string aleatorio de 16 carácteres
 resource "random_string" "secret" {
   length  = 16

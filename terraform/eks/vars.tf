@@ -65,7 +65,8 @@ variable "cloudwatch_log_group_class" {
 }
 
 variable "workers_attachment_policies" {
-  type = list(string)
+  description = "Políticas IAM predefinidas en AWS que se asignarán al rol IAM que se vincule con los worker nodes"
+  type        = list(string)
   default = [
     "AmazonEKSWorkerNodePolicy", "AmazonEKS_CNI_Policy", "AmazonEC2ContainerRegistryReadOnly",
     "AmazonSSMManagedInstanceCore"
