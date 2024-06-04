@@ -16,6 +16,7 @@ locals {
   workers_iam_role_name         = format("%s-%s", local.workers_name, "iam-role")
   workers_group_name            = format("%s-%s", local.workers_name, "group")
   identity_provider_config_name = format("%s-%s", var.resources_name, "idp")
+  ebs_csi_driver_iam_role_name  = format("%s-%s", local.cluster_name, "ebs-iam-role")
 }
 
 #### Recursos para el Control Plane ####
@@ -120,7 +121,6 @@ resource "aws_eks_cluster" "this" {
 }
 
 # Recurso para instalar el plugin VPC CNI en el clúster EKS creado
-# Documentación https://github.com/asaldana-uoc/tfm-ciberseguridad/tree/34cecf89bf9374f5e02f93d62ddbb03fd40af23b/terraform/vpc
 resource "aws_eks_addon" "vpc_cni" {
   cluster_name  = aws_eks_cluster.this.name
   addon_name    = "vpc-cni"
@@ -324,4 +324,53 @@ resource "aws_eks_identity_provider_config" "this" {
     identity_provider_config_name = local.identity_provider_config_name
     issuer_url                    = "https://${aws_iam_openid_connect_provider.oidc_provider.url}"
   }
+}
+
+# Recurso para instalar el plugin AWS EBS CSI en el clúster EKS para gestionar volúmenes persistentes con EBS
+resource "aws_eks_addon" "ebs_csi_driver" {
+  cluster_name             = aws_eks_cluster.this.name
+  addon_name               = "aws-ebs-csi-driver"
+  addon_version            = var.cluster_aws_ebs_csi_addon_version
+  service_account_role_arn = aws_iam_role.ebs_csi_driver.arn
+}
+
+# Se crea un rol IAM para permitir al plugin de EKS interactuar con la API de AWS
+resource "aws_iam_role" "ebs_csi_driver" {
+  name               = local.ebs_csi_driver_iam_role_name
+  assume_role_policy = data.aws_iam_policy_document.ebs_csi_driver_assume_role.json
+}
+
+# Se crea una política de acceso IAM para que la service account de Kubernetes ebs-csi-controller-sa pueda autenticarse a través de OpenID
+data "aws_iam_policy_document" "ebs_csi_driver_assume_role" {
+  statement {
+    effect = "Allow"
+
+    principals {
+      type        = "Federated"
+      identifiers = [aws_iam_openid_connect_provider.oidc_provider.arn]
+    }
+
+    actions = [
+      "sts:AssumeRoleWithWebIdentity",
+    ]
+
+    condition {
+      test     = "StringEquals"
+      variable = "${aws_iam_openid_connect_provider.oidc_provider.url}:aud"
+      values   = ["sts.amazonaws.com"]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "${aws_iam_openid_connect_provider.oidc_provider.url}:sub"
+      values   = ["system:serviceaccount:kube-system:ebs-csi-controller-sa"]
+    }
+
+  }
+}
+
+# Se asocia la política predeterminada de AWS AmazonEBSCSIDriverPolicy al rol IAM del plugin AWS EBS CSI con permisos para utilizar EC2 (crear volúmenes)
+resource "aws_iam_role_policy_attachment" "ebs_csi_role_attachment" {
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
+  role       = aws_iam_role.ebs_csi_driver.name
 }

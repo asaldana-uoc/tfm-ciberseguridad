@@ -49,7 +49,11 @@ variable "cluster_security_group_ids" {
 variable "cluster_vpc_cni_addon_version" {
   description = "Version del addon VPC CNI para EKS"
   type        = string
-  default     = null
+}
+
+variable "cluster_aws_ebs_csi_addon_version" {
+  description = "Version del addon Amazon EBS CSI driver para EKS para gestionar el uso de volúmenes EBS en EKS"
+  type        = string
 }
 
 variable "cloudwatch_log_retention_in_days" {

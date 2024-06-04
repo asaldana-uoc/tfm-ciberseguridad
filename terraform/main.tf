@@ -16,7 +16,7 @@ module "vpc" {
   vpc_cidr             = "172.16.0.0/20"
   enable_dns_support   = true
   enable_dns_hostnames = true
-  create_nat_gateway   = true
+  create_nat_gateway   = false
 
   # Distribución de las subredes públicas dentro del VPC
   public_subnets = {
@@ -74,6 +74,10 @@ module "eks" {
   # Versión del plugin VPC CNI a utilizar
   # Documentación https://docs.aws.amazon.com/eks/latest/userguide/managing-vpc-cni.html
   cluster_vpc_cni_addon_version = "v1.18.0-eksbuild.1"
+
+  # Versión del addon Amazon EBS CSI a instalar
+  # Documentación https://docs.aws.amazon.com/eks/latest/userguide/managing-ebs-csi.html
+  cluster_aws_ebs_csi_addon_version = "v1.29.1-eksbuild.1"
 
   # AMI BOTTLEROCKET para los worker node
   # https://docs.aws.amazon.com/eks/latest/userguide/retrieve-ami-id-bottlerocket.html

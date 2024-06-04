@@ -1,3 +1,4 @@
+<!-- BEGIN_TF_DOCS -->
 ## Requirements
 
 | Name | Version |
@@ -20,6 +21,7 @@ No modules.
 | Name | Type |
 |------|------|
 | [aws_cloudwatch_log_group.cluster](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_log_group) | resource |
+| [aws_eks_addon.ebs_csi_driver](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_addon) | resource |
 | [aws_eks_addon.vpc_cni](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_addon) | resource |
 | [aws_eks_cluster.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_cluster) | resource |
 | [aws_eks_identity_provider_config.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_identity_provider_config) | resource |
@@ -27,15 +29,18 @@ No modules.
 | [aws_iam_openid_connect_provider.oidc_provider](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_openid_connect_provider) | resource |
 | [aws_iam_policy.cluster_encryption](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
 | [aws_iam_role.cluster](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
+| [aws_iam_role.ebs_csi_driver](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
 | [aws_iam_role.workers](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
 | [aws_iam_role_policy_attachment.cluster](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
 | [aws_iam_role_policy_attachment.cluster_encryption](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
+| [aws_iam_role_policy_attachment.ebs_csi_role_attachment](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
 | [aws_iam_role_policy_attachment.workers](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
 | [aws_kms_alias.cluster_encryption](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/kms_alias) | resource |
 | [aws_kms_key.cluster_encryption](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/kms_key) | resource |
 | [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
 | [aws_iam_policy_document.cluster_assume_role_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.cluster_encryption](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
+| [aws_iam_policy_document.ebs_csi_driver_assume_role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.kms_key_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.workers_assume_role_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [tls_certificate.this](https://registry.terraform.io/providers/hashicorp/tls/latest/docs/data-sources/certificate) | data source |
@@ -46,6 +51,7 @@ No modules.
 |------|-------------|------|---------|:--------:|
 | <a name="input_cloudwatch_log_group_class"></a> [cloudwatch\_log\_group\_class](#input\_cloudwatch\_log\_group\_class) | Tipo de grupo de logs de CloudWatch. Los valores admitidos son `STANDARD` or `INFREQUENT_ACCESS`. https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CloudWatch_Logs_Log_Classes.html | `string` | `null` | no |
 | <a name="input_cloudwatch_log_retention_in_days"></a> [cloudwatch\_log\_retention\_in\_days](#input\_cloudwatch\_log\_retention\_in\_days) | Número de días de retención en CloudWatch de los logs generados por EKS | `number` | `30` | no |
+| <a name="input_cluster_aws_ebs_csi_addon_version"></a> [cluster\_aws\_ebs\_csi\_addon\_version](#input\_cluster\_aws\_ebs\_csi\_addon\_version) | Version del addon Amazon EBS CSI driver para EKS para gestionar el uso de volúmenes EBS en EKS | `string` | n/a | yes |
 | <a name="input_cluster_enabled_log_types"></a> [cluster\_enabled\_log\_types](#input\_cluster\_enabled\_log\_types) | Lista de eventos del control plane a registrar en CloudWatch. Las opciones disponibles se pueden consultar en el enlace: https://docs.aws.amazon.com/eks/latest/userguide/control-plane-logs.html | `list(string)` | n/a | yes |
 | <a name="input_cluster_endpoint_private_access"></a> [cluster\_endpoint\_private\_access](#input\_cluster\_endpoint\_private\_access) | Variable de tipo boolean para definir si el acceso a través de direccionamiento privado al API Server de EKS está permitido | `bool` | n/a | yes |
 | <a name="input_cluster_endpoint_public_access"></a> [cluster\_endpoint\_public\_access](#input\_cluster\_endpoint\_public\_access) | Variable de tipo boolean para definir si el acceso a través de direccionamiento públic al API Server de EKS está permitido | `bool` | n/a | yes |
@@ -54,7 +60,7 @@ No modules.
 | <a name="input_cluster_security_group_ids"></a> [cluster\_security\_group\_ids](#input\_cluster\_security\_group\_ids) | Lista de identificadores de security group para las ENI que EKS crea para la comunicación entre workers y control plane | `list(string)` | `[]` | no |
 | <a name="input_cluster_subnets_ids"></a> [cluster\_subnets\_ids](#input\_cluster\_subnets\_ids) | Identificador de las subredes del VPC donde desplegará el clúster EKS | `list(string)` | n/a | yes |
 | <a name="input_cluster_version"></a> [cluster\_version](#input\_cluster\_version) | Versión del clúster EKS. Más información en el enlace https://docs.aws.amazon.com/eks/latest/userguide/kubernetes-versions.html | `string` | n/a | yes |
-| <a name="input_cluster_vpc_cni_addon_version"></a> [cluster\_vpc\_cni\_addon\_version](#input\_cluster\_vpc\_cni\_addon\_version) | Version del addon VPC CNI para EKS | `string` | `null` | no |
+| <a name="input_cluster_vpc_cni_addon_version"></a> [cluster\_vpc\_cni\_addon\_version](#input\_cluster\_vpc\_cni\_addon\_version) | Version del addon VPC CNI para EKS | `string` | n/a | yes |
 | <a name="input_resources_name"></a> [resources\_name](#input\_resources\_name) | Prefijo que se añadirá al nombre de todos los recursos que se creen en este módulo para identificarlos fácilmente | `string` | n/a | yes |
 | <a name="input_workers_ami_type"></a> [workers\_ami\_type](#input\_workers\_ami\_type) | Tipo de imagen base (sistema operativo) para crear los worker nodes | `string` | n/a | yes |
 | <a name="input_workers_attachment_policies"></a> [workers\_attachment\_policies](#input\_workers\_attachment\_policies) | Políticas IAM predefinidas en AWS que se asignarán al rol IAM que se vincule con los worker nodes | `list(string)` | <pre>[<br>  "AmazonEKSWorkerNodePolicy",<br>  "AmazonEKS_CNI_Policy",<br>  "AmazonEC2ContainerRegistryReadOnly",<br>  "AmazonSSMManagedInstanceCore"<br>]</pre> | no |
@@ -79,3 +85,4 @@ No modules.
 | <a name="output_openid_connect_provider_arn"></a> [openid\_connect\_provider\_arn](#output\_openid\_connect\_provider\_arn) | Nombre del recurso de Amazon (ARN) del proveedor OIDC |
 | <a name="output_openid_connect_provider_id"></a> [openid\_connect\_provider\_id](#output\_openid\_connect\_provider\_id) | ID del proveedor OIDC |
 | <a name="output_openid_connect_provider_url"></a> [openid\_connect\_provider\_url](#output\_openid\_connect\_provider\_url) | URL del proveedor OIDC |
+<!-- END_TF_DOCS -->

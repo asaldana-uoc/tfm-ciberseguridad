@@ -1,4 +1,5 @@
 # Aplicar terraform
+terraform -chdir=terraform init
 terraform -chdir=terraform apply -auto-approve
 
 # Actualizar el archivo kubeconfig
@@ -28,4 +29,6 @@ helm install secrets-provider-aws aws-secrets-manager/secrets-store-csi-driver-p
 # Instalar Falco en EKS
 helm repo add falcosecurity https://falcosecurity.github.io/charts
 helm repo update
-#helm install falco falcosecurity/falco --version 4.3.0 --create-namespace -n falco -f falco/values.yaml
+envsubt <  falco/values.yaml > falco/values-deploy.yaml
+helm install falco falcosecurity/falco --version 4.3.0 --create-namespace -n falco -f falco/values-deploy.yaml
+rm -f falco/values-deploy.yaml
