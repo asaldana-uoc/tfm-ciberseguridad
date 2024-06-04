@@ -16,7 +16,7 @@ module "vpc" {
   vpc_cidr             = "172.16.0.0/20"
   enable_dns_support   = true
   enable_dns_hostnames = true
-  create_nat_gateway   = false
+  create_nat_gateway   = true
 
   # Distribución de las subredes públicas dentro del VPC
   public_subnets = {

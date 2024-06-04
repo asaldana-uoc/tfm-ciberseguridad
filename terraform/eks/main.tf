@@ -327,17 +327,35 @@ resource "aws_eks_identity_provider_config" "this" {
 }
 
 # Recurso para instalar el plugin AWS EBS CSI en el clúster EKS para gestionar volúmenes persistentes con EBS
+# El despliegue de este plugin esperará a que el proveedor de identidades OpenID y el worker node group estén disponibles
 resource "aws_eks_addon" "ebs_csi_driver" {
   cluster_name             = aws_eks_cluster.this.name
   addon_name               = "aws-ebs-csi-driver"
   addon_version            = var.cluster_aws_ebs_csi_addon_version
   service_account_role_arn = aws_iam_role.ebs_csi_driver.arn
+
+  # Tiempo máximo permitido para finalizar las operaciones de creación, actualización y eliminación del plugin.
+  timeouts {
+    create = "10m"
+    update = "10m"
+    delete = "10m"
+  }
+
+  depends_on = [
+    aws_eks_identity_provider_config.this,
+    aws_eks_node_group.workers
+  ]
 }
 
 # Se crea un rol IAM para permitir al plugin de EKS interactuar con la API de AWS
 resource "aws_iam_role" "ebs_csi_driver" {
   name               = local.ebs_csi_driver_iam_role_name
   assume_role_policy = data.aws_iam_policy_document.ebs_csi_driver_assume_role.json
+
+  depends_on = [
+    aws_eks_identity_provider_config.this,
+    aws_eks_node_group.workers
+  ]
 }
 
 # Se crea una política de acceso IAM para que la service account de Kubernetes ebs-csi-controller-sa pueda autenticarse a través de OpenID
@@ -367,10 +385,20 @@ data "aws_iam_policy_document" "ebs_csi_driver_assume_role" {
     }
 
   }
+
+  depends_on = [
+    aws_eks_identity_provider_config.this,
+    aws_eks_node_group.workers
+  ]
 }
 
 # Se asocia la política predeterminada de AWS AmazonEBSCSIDriverPolicy al rol IAM del plugin AWS EBS CSI con permisos para utilizar EC2 (crear volúmenes)
 resource "aws_iam_role_policy_attachment" "ebs_csi_role_attachment" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
   role       = aws_iam_role.ebs_csi_driver.name
+
+  depends_on = [
+    aws_eks_identity_provider_config.this,
+    aws_eks_node_group.workers
+  ]
 }
