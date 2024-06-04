@@ -30,6 +30,7 @@ spec:
           - kube-system
           - kyverno
           - falco
+          - trivy-system
     generate:
       apiVersion: v1
       kind: ResourceQuota
@@ -58,6 +59,7 @@ spec:
           - kube-system
           - kyverno
           - falco
+          - trivy-system
     generate:
       apiVersion: v1
       kind: LimitRange

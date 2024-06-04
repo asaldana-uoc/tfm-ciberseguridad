@@ -33,6 +33,7 @@ spec:
           - kube-system
           - kyverno
           - falco
+          - trivy-system
     validate:
       message: "Root filesystem must be read-only."
       pattern:

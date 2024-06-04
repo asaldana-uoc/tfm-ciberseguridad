@@ -35,6 +35,7 @@ spec:
           - kube-system
           - kyverno
           - falco
+          - trivy-system
     mutate:
       patchStrategicMerge:
         metadata:
