@@ -1,0 +1,3 @@
+excludeNamespaces: "falco,kyverno"
+trivy:
+  ignoreUnfixed: true

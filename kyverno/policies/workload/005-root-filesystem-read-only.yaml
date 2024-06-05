@@ -27,9 +27,7 @@ spec:
     exclude:
       any:
       - resources:
-          kinds:
-          - Namespace
-          names:
+          namespaces:
           - kube-system
           - kyverno
           - falco

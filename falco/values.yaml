@@ -2,6 +2,13 @@ falco:
   rules_file:
     - /etc/falco/k8s_audit_rules.yaml
     - /etc/falco/rules.d
+
+  rules:
+    - disable:
+        rule: "Disallowed K8s User"
+    - disable:
+        rule: "K8s *"
+
   plugins:
     - name: k8saudit-eks
       library_path: libk8saudit-eks.so
@@ -55,3 +62,37 @@ serviceAccount:
   create: true
   annotations:
     eks.amazonaws.com/role-arn: arn:aws:iam::${AWS_ACCOUNT_ID}:role/tfm-asaldana-falco-role
+
+customRules:
+  secrets_rules.yaml: |-
+    - list: excluded_namespaces
+      items: ["kube-system", "kyverno", "falco", "trivy-system"]
+
+    - rule: EKS Secret Created
+      desc: Detect any attempt to create a secret. Service account tokens are excluded.
+      condition: (kactivity and kcreate and secret and not ka.target.namespace in (excluded_namespaces) and non_system_user and response_successful)
+      output: K8s Secret Created (user=%ka.user.name secret=%ka.target.name ns=%ka.target.namespace resource=%ka.target.resource resp=%ka.response.code decision=%ka.auth.decision reason=%ka.auth.reason)
+      priority: ERROR
+      source: k8s_audit
+      tags: [secrets]
+
+    - rule: EKS Secret Deleted
+      desc: Detect any attempt to delete a secret. Service account tokens are excluded.
+      condition: (kactivity and kdelete and secret and not ka.target.namespace in (excluded_namespaces) and non_system_user and response_successful)
+      output: K8s Secret Deleted (user=%ka.user.name secret=%ka.target.name ns=%ka.target.namespace resource=%ka.target.resource resp=%ka.response.code decision=%ka.auth.decision reason=%ka.auth.reason)
+      priority: INFO
+      source: k8s_audit
+      tags: [secrets]
+
+    - rule: EKS Secret Get Successfully
+      desc: >
+        Detect any attempt to get a secret. Service account tokens are excluded.
+      condition: >
+        secret and kget
+        and kactivity
+        and response_successful
+        and not ka.target.namespace in (excluded_namespaces)
+      output: K8s Secret Get Successfully (user=%ka.user.name secret=%ka.target.name ns=%ka.target.namespace resource=%ka.target.resource resp=%ka.response.code decision=%ka.auth.decision reason=%ka.auth.reason)
+      priority: ERROR
+      source: k8s_audit
+      tags: [secrets]

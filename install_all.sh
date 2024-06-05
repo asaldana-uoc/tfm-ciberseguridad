@@ -30,13 +30,14 @@ helm install secrets-provider-aws aws-secrets-manager/secrets-store-csi-driver-p
 helm repo add falcosecurity https://falcosecurity.github.io/charts
 helm repo update
 envsubst <  falco/values.yaml > falco/values-deploy.yaml
-helm install falco falcosecurity/falco --version 4.3.0 --create-namespace -n falco -f falco/values-deploy.yaml
+helm install falco falcosecurity/falco --version 4.4.0 --create-namespace -n falco -f falco/values-deploy.yaml
 rm -f falco/values-deploy.yaml
 
 # Instalar Trivy
-#helm repo add aqua https://aquasecurity.github.io/helm-charts/
-#helm repo update
-#helm install trivy-operator aqua/trivy-operator \
-#  --namespace trivy-system \
-#  --create-namespace \
-#  --version 0.23.2
+helm repo add aqua https://aquasecurity.github.io/helm-charts/
+helm repo update
+helm install trivy-operator aqua/trivy-operator \
+  --namespace trivy-system \
+  --create-namespace \
+  --version 0.23.2 \
+  --values trivy/values.yaml
