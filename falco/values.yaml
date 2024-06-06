@@ -71,7 +71,7 @@ customRules:
     - rule: EKS Secret Created
       desc: Detect any attempt to create a secret. Service account tokens are excluded.
       condition: (kactivity and kcreate and secret and not ka.target.namespace in (excluded_namespaces) and non_system_user and response_successful)
-      output: K8s Secret Created (user=%ka.user.name secret=%ka.target.name ns=%ka.target.namespace resource=%ka.target.resource resp=%ka.response.code decision=%ka.auth.decision reason=%ka.auth.reason)
+      output: Kubernetes Secret Created (user=%ka.user.name secret=%ka.target.name ns=%ka.target.namespace resource=%ka.target.resource resp=%ka.response.code decision=%ka.auth.decision reason=%ka.auth.reason)
       priority: ERROR
       source: k8s_audit
       tags: [secrets]
@@ -79,7 +79,7 @@ customRules:
     - rule: EKS Secret Deleted
       desc: Detect any attempt to delete a secret. Service account tokens are excluded.
       condition: (kactivity and kdelete and secret and not ka.target.namespace in (excluded_namespaces) and non_system_user and response_successful)
-      output: K8s Secret Deleted (user=%ka.user.name secret=%ka.target.name ns=%ka.target.namespace resource=%ka.target.resource resp=%ka.response.code decision=%ka.auth.decision reason=%ka.auth.reason)
+      output: Kubernetes Secret Deleted (user=%ka.user.name secret=%ka.target.name ns=%ka.target.namespace resource=%ka.target.resource resp=%ka.response.code decision=%ka.auth.decision reason=%ka.auth.reason)
       priority: INFO
       source: k8s_audit
       tags: [secrets]
@@ -92,7 +92,7 @@ customRules:
         and kactivity
         and response_successful
         and not ka.target.namespace in (excluded_namespaces)
-      output: K8s Secret Get Successfully (user=%ka.user.name secret=%ka.target.name ns=%ka.target.namespace resource=%ka.target.resource resp=%ka.response.code decision=%ka.auth.decision reason=%ka.auth.reason)
+      output: Kubernetes Secret Get Successfully (user=%ka.user.name secret=%ka.target.name ns=%ka.target.namespace resource=%ka.target.resource resp=%ka.response.code decision=%ka.auth.decision reason=%ka.auth.reason)
       priority: ERROR
       source: k8s_audit
       tags: [secrets]
