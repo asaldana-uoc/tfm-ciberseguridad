@@ -209,7 +209,7 @@ data "aws_iam_policy_document" "permissions" {
       "logs:DescribeLogStreams",
     ]
 
-    resources = ["*"]
+    resources = ["${aws_cloudwatch_log_group.this[0].arn}:*"]
   }
 }
 
