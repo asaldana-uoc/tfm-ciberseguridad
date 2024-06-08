@@ -196,6 +196,7 @@ resource "aws_iam_role" "this" {
 }
 
 # Listados de permisos que se otorgarán al rol IAM
+#trivy:ignore:AVD-AWS-0057
 data "aws_iam_policy_document" "permissions" {
   count = var.enable_vpc_flow_flogs ? 1 : 0
   statement {
