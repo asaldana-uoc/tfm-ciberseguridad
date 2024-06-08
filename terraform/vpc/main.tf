@@ -148,3 +148,76 @@ resource "aws_route_table_association" "private" {
   route_table_id = aws_route_table.private[0].id
 }
 
+# Recurso para crear VPC Flow Logs
+resource "aws_flow_log" "this" {
+  count           = var.enable_vpc_flow_flogs ? 1 : 0
+  iam_role_arn    = aws_iam_role.this[0].arn
+  log_destination = aws_cloudwatch_log_group.this[0].arn
+  traffic_type    = "ALL"
+  vpc_id          = aws_vpc.this.id
+
+  tags = {
+    Name = format("%s-private-route-table", local.vpc_name)
+  }
+}
+
+# Grupo de CloudWatch para almacenar los registros de la actividad del tráfico de red dentro de la VPC
+resource "aws_cloudwatch_log_group" "this" {
+  count             = var.enable_vpc_flow_flogs ? 1 : 0
+  name              = "/aws/vpc/${local.vpc_name}/vpc-flow-logs"
+  retention_in_days = var.vpc_flow_logs_cloudwatch_retention_in_days
+  skip_destroy      = var.vpc_flow_logs_cloudwatch_skip_destroy
+
+  tags = {
+    Name = format("%s-vpc-flow-logs", local.vpc_name)
+  }
+}
+
+# Permisos otorgados al servicio VPC Flow Logs para poder acceder a los servicios VPC y CloudWatch
+data "aws_iam_policy_document" "assume_role" {
+  count = var.enable_vpc_flow_flogs ? 1 : 0
+  statement {
+    effect = "Allow"
+
+    principals {
+      type        = "Service"
+      identifiers = ["vpc-flow-logs.amazonaws.com"]
+    }
+
+    actions = ["sts:AssumeRole"]
+  }
+}
+
+# Rol IAM que utilizará VPC Flow Logs para poder acceder la tráfico de red de la VPC y guardar los registros en CloudWatch
+resource "aws_iam_role" "this" {
+  count              = var.enable_vpc_flow_flogs ? 1 : 0
+  name               = format("%s-vpc-flow-logs", local.vpc_name)
+  assume_role_policy = data.aws_iam_policy_document.assume_role[0].json
+}
+
+# Listados de permisos que se otorgarán al rol IAM
+data "aws_iam_policy_document" "permissions" {
+  count = var.enable_vpc_flow_flogs ? 1 : 0
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream",
+      "logs:PutLogEvents",
+      "logs:DescribeLogGroups",
+      "logs:DescribeLogStreams",
+    ]
+
+    resources = ["*"]
+  }
+}
+
+# Asociación de los permisos anteriores al rol IAM
+resource "aws_iam_role_policy" "this" {
+  count  = var.enable_vpc_flow_flogs ? 1 : 0
+  name   = format("%s-vpc-flow-logs", local.vpc_name)
+  role   = aws_iam_role.this[0].id
+  policy = data.aws_iam_policy_document.permissions[0].json
+}
+

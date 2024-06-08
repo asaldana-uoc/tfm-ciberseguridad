@@ -37,10 +37,9 @@ data "aws_iam_policy_document" "cloudwatch" {
   statement {
     sid = "ReadAccessToCloudWatchLogs"
     actions = [
-      "logs:Describe*",
-      "logs:FilterLogEvents",
-      "logs:Get*",
-      "logs:List*"
+      "logs:DescribeLogStreams",
+      "logs:GetLogEvents",
+      "logs:FilterLogEvents"
     ]
     effect = "Allow"
     resources = [

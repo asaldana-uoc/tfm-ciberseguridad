@@ -34,3 +34,21 @@ variable "enable_dns_support" {
   type        = bool
   default     = null
 }
+
+variable "enable_vpc_flow_flogs" {
+  description = "Variable de tipo booleana para elegir si activar o no VPC Flow Logs"
+  type        = bool
+  default     = false
+}
+
+variable "vpc_flow_logs_cloudwatch_retention_in_days" {
+  description = "Número de días de retención en CloudWatch de VPC Flow Logs"
+  type        = number
+  default     = 7
+}
+
+variable "vpc_flow_logs_cloudwatch_skip_destroy" {
+  description = "Variable de tipo booleana para decidir si preservar los logs incluso si se se eliminar el recurso con terraform"
+  type        = bool
+  default     = false
+}
