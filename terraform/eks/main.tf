@@ -80,6 +80,7 @@ resource "aws_iam_role_policy_attachment" "cluster" {
 
 # Recurso para crear EKS clúster
 # Documentación https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_cluster
+#trivy:ignore:AVD-AWS-0040
 resource "aws_eks_cluster" "this" {
   name                      = local.cluster_name
   role_arn                  = aws_iam_role.cluster.arn

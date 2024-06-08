@@ -13,10 +13,11 @@ module "vpc" {
   resources_name = local.resources_name
 
   # Direccionamiento IP elegido para el VPC
-  vpc_cidr             = "172.16.0.0/20"
-  enable_dns_support   = true
-  enable_dns_hostnames = true
-  create_nat_gateway   = true
+  vpc_cidr              = "172.16.0.0/20"
+  enable_dns_support    = true
+  enable_dns_hostnames  = true
+  create_nat_gateway    = true
+  enable_vpc_flow_flogs = true
 
   # Distribución de las subredes públicas dentro del VPC
   public_subnets = {
@@ -61,7 +62,7 @@ module "eks" {
   source         = "./eks"
   resources_name = local.resources_name
 
-  cluster_enabled_log_types = ["api", "audit", "authenticator"]
+  cluster_enabled_log_types = ["api", "audit", "authenticator", "scheduler", "controllerManager"]
   # Versión del clúster EKS https://docs.aws.amazon.com/eks/latest/userguide/kubernetes-versions.html
   cluster_version = "1.29"
   # El control plane se desplegará en todas las subredes (privadas y públicas) y el endpoint será accesible internamente y públicamente
@@ -103,9 +104,10 @@ output "eks_cluster_name" {
 
 # Módulo para crear un repositorio ECR donde almacenar imágenes de contenedores en AWS
 module "ecr" {
-  source          = "./ecr"
-  repository_name = "debug-tools"
-  force_delete    = true
+  source               = "./ecr"
+  repository_name      = "debug-tools"
+  force_delete         = true
+  image_tag_mutability = "IMMUTABLE"
 
   depends_on = [module.eks]
 }
