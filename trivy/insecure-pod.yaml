@@ -8,12 +8,12 @@ metadata:
 apiVersion: v1
 kind: Pod
 metadata:
-  name: nginx
+  name: nginx-inseguro
   namespace: test-trivy-ns
 spec:
   hostNetwork: true
   containers:
-  - name: nginx
+  - name: nginx-inseguro
     image: nginx:alpine3.17
     securityContext:
       privileged: true
