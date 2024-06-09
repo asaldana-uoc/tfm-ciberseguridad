@@ -32,6 +32,7 @@ spec:
           - kyverno
           - falco
           - trivy-system
+          - monitoring
     validate:
       message: "Root filesystem must be read-only."
       pattern:

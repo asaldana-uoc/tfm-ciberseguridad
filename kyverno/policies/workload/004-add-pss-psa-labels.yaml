@@ -34,6 +34,7 @@ spec:
           - kyverno
           - falco
           - trivy-system
+          - monitoring
     mutate:
       patchStrategicMerge:
         metadata:

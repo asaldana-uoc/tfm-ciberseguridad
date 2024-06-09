@@ -1,3 +1,5 @@
-excludeNamespaces: "falco,kyverno"
+excludeNamespaces: "falco,kyverno,kube-system,trivy-system,monitoring"
 trivy:
   ignoreUnfixed: true
+serviceMonitor:
+  enabled: true

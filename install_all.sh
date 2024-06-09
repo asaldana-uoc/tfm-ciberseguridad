@@ -39,5 +39,12 @@ helm repo update
 helm install trivy-operator aqua/trivy-operator \
   --namespace trivy-system \
   --create-namespace \
-  --version 0.23.2 \
+  --version 0.20.6 \
   --values trivy/values.yaml
+
+# Instalar stack monitorización Prometheus + Grafana
+kubectl create ns monitoring
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+helm upgrade --install prom prometheus-community/kube-prometheus-stack -n monitoring --values values.yaml
+

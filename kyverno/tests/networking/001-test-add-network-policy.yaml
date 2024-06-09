@@ -13,7 +13,7 @@ metadata:
 spec:
   containers:
   - name: debug-tools1
-    image: XXXXXXXXXXXX.dkr.ecr.eu-south-2.amazonaws.com/debug-tools
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.eu-south-2.amazonaws.com/debug-tools
     command:
       - "sleep"
       - "86400"
@@ -42,7 +42,7 @@ metadata:
 spec:
   containers:
   - name: debug-tools2
-    image: XXXXXXXXXXXX.dkr.ecr.eu-south-2.amazonaws.com/debug-tools
+    image: ${AWS_ACCOUNT_ID}.dkr.ecr.eu-south-2.amazonaws.com/debug-tools
     command:
       - "sleep"
       - "86400"
