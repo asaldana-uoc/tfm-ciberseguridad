@@ -1,4 +1,4 @@
-excludeNamespaces: "falco,kyverno,kube-system,trivy-system,monitoring"
+excludeNamespaces: "falco,kyverno,kube-system,trivy-system"
 targetWorkloads: "pod"
 trivy:
   ignoreUnfixed: true

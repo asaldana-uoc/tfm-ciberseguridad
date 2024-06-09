@@ -25,17 +25,3 @@ kubectl delete crd clusterinfraassessmentreports.aquasecurity.github.io
 kubectl delete crd sbomreports.aquasecurity.github.io
 kubectl delete crd clustersbomreports.aquasecurity.github.io
 kubectl delete crd clustervulnerabilityreports.aquasecurity.github.io
-
-# Desinstalar stack monitorización Prometheus + Grafana
-helm uninstall prom prometheus-community/kube-prometheus-stack
-kubectl delete namespace monitoring
-kubectl delete crd alertmanagerconfigs.monitoring.coreos.com
-kubectl delete crd alertmanagers.monitoring.coreos.com
-kubectl delete crd podmonitors.monitoring.coreos.com
-kubectl delete crd probes.monitoring.coreos.com
-kubectl delete crd prometheusagents.monitoring.coreos.com
-kubectl delete crd prometheuses.monitoring.coreos.com
-kubectl delete crd prometheusrules.monitoring.coreos.com
-kubectl delete crd scrapeconfigs.monitoring.coreos.com
-kubectl delete crd servicemonitors.monitoring.coreos.com
-kubectl delete crd thanosrulers.monitoring.coreos.com

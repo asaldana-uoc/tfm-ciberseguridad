@@ -1,0 +1,213 @@
+apiVersion: aquasecurity.github.io/v1alpha1
+kind: ConfigAuditReport
+metadata:
+  annotations:
+    trivy-operator.aquasecurity.github.io/report-ttl: 24h0m0s
+  creationTimestamp: "2024-06-09T16:59:24Z"
+  generation: 2
+  labels:
+    plugin-config-hash: 659b7b9c46
+    resource-spec-hash: 69c546998b
+    trivy-operator.resource.kind: Pod
+    trivy-operator.resource.name: nginx-inseguro
+    trivy-operator.resource.namespace: test-trivy-ns
+  name: pod-nginx-inseguro
+  namespace: test-trivy-ns
+  ownerReferences:
+  - apiVersion: v1
+    blockOwnerDeletion: false
+    controller: true
+    kind: Pod
+    name: nginx-inseguro
+    uid: 4f12806b-9f82-4e9a-a196-e878f2179531
+  resourceVersion: "45411"
+  uid: 17782366-0c1b-400a-a0ad-eddb2c0ce9d0
+report:
+  checks:
+  - category: Kubernetes Security Check
+    checkID: KSV001
+    description: A program inside the container can elevate its own privileges and
+      run as root, which might give the program control over the container and node.
+    messages:
+    - Container 'nginx-inseguro' of Pod 'nginx-inseguro' should set 'securityContext.allowPrivilegeEscalation'
+      to false
+    remediation: Set 'set containers[].securityContext.allowPrivilegeEscalation' to
+      'false'.
+    severity: MEDIUM
+    success: false
+    title: Can elevate its own privileges
+  - category: Kubernetes Security Check
+    checkID: KSV003
+    description: The container should drop all default capabilities and add only those
+      that are needed for its execution.
+    messages:
+    - Container 'nginx-inseguro' of Pod 'nginx-inseguro' should add 'ALL' to 'securityContext.capabilities.drop'
+    remediation: Add 'ALL' to containers[].securityContext.capabilities.drop.
+    severity: LOW
+    success: false
+    title: 'Default capabilities: some containers do not drop all'
+  - category: Kubernetes Security Check
+    checkID: KSV009
+    description: Sharing the host’s network namespace permits processes in the pod
+      to communicate with processes bound to the host’s loopback adapter.
+    messages:
+    - Pod 'nginx-inseguro' should not set 'spec.template.spec.hostNetwork' to true
+    remediation: Do not set 'spec.template.spec.hostNetwork' to true.
+    severity: HIGH
+    success: false
+    title: Access to host network
+  - category: Kubernetes Security Check
+    checkID: KSV011
+    description: Enforcing CPU limits prevents DoS via resource exhaustion.
+    messages:
+    - Container 'nginx-inseguro' of Pod 'nginx-inseguro' should set 'resources.limits.cpu'
+    remediation: Set a limit value under 'containers[].resources.limits.cpu'.
+    severity: LOW
+    success: false
+    title: CPU not limited
+  - category: Kubernetes Security Check
+    checkID: KSV012
+    description: Force the running image to run as a non-root user to ensure least
+      privileges.
+    messages:
+    - Container 'nginx-inseguro' of Pod 'nginx-inseguro' should set 'securityContext.runAsNonRoot'
+      to true
+    remediation: Set 'containers[].securityContext.runAsNonRoot' to true.
+    severity: MEDIUM
+    success: false
+    title: Runs as root user
+  - category: Kubernetes Security Check
+    checkID: KSV014
+    description: An immutable root file system prevents applications from writing
+      to their local disk. This can limit intrusions, as attackers will not be able
+      to tamper with the file system or write foreign executables to disk.
+    messages:
+    - Container 'nginx-inseguro' of Pod 'nginx-inseguro' should set 'securityContext.readOnlyRootFilesystem'
+      to true
+    remediation: Change 'containers[].securityContext.readOnlyRootFilesystem' to 'true'.
+    severity: LOW
+    success: false
+    title: Root file system is not read-only
+  - category: Kubernetes Security Check
+    checkID: KSV015
+    description: When containers have resource requests specified, the scheduler can
+      make better decisions about which nodes to place pods on, and how to deal with
+      resource contention.
+    messages:
+    - Container 'nginx-inseguro' of Pod 'nginx-inseguro' should set 'resources.requests.cpu'
+    remediation: Set 'containers[].resources.requests.cpu'.
+    severity: LOW
+    success: false
+    title: CPU requests not specified
+  - category: Kubernetes Security Check
+    checkID: KSV016
+    description: When containers have memory requests specified, the scheduler can
+      make better decisions about which nodes to place pods on, and how to deal with
+      resource contention.
+    messages:
+    - Container 'nginx-inseguro' of Pod 'nginx-inseguro' should set 'resources.requests.memory'
+    remediation: Set 'containers[].resources.requests.memory'.
+    severity: LOW
+    success: false
+    title: Memory requests not specified
+  - category: Kubernetes Security Check
+    checkID: KSV017
+    description: Privileged containers share namespaces with the host system and do
+      not offer any security. They should be used exclusively for system containers
+      that require high privileges.
+    messages:
+    - Container 'nginx-inseguro' of Pod 'nginx-inseguro' should set 'securityContext.privileged'
+      to false
+    remediation: Change 'containers[].securityContext.privileged' to 'false'.
+    severity: HIGH
+    success: false
+    title: Privileged
+  - category: Kubernetes Security Check
+    checkID: KSV018
+    description: Enforcing memory limits prevents DoS via resource exhaustion.
+    messages:
+    - Container 'nginx-inseguro' of Pod 'nginx-inseguro' should set 'resources.limits.memory'
+    remediation: Set a limit value under 'containers[].resources.limits.memory'.
+    severity: LOW
+    success: false
+    title: Memory not limited
+  - category: Kubernetes Security Check
+    checkID: KSV020
+    description: Force the container to run with user ID > 10000 to avoid conflicts
+      with the host’s user table.
+    messages:
+    - Container 'nginx-inseguro' of Pod 'nginx-inseguro' should set 'securityContext.runAsUser'
+      > 10000
+    remediation: Set 'containers[].securityContext.runAsUser' to an integer > 10000.
+    severity: LOW
+    success: false
+    title: Runs with UID <= 10000
+  - category: Kubernetes Security Check
+    checkID: KSV021
+    description: Force the container to run with group ID > 10000 to avoid conflicts
+      with the host’s user table.
+    messages:
+    - Container 'nginx-inseguro' of Pod 'nginx-inseguro' should set 'securityContext.runAsGroup'
+      > 10000
+    remediation: Set 'containers[].securityContext.runAsGroup' to an integer > 10000.
+    severity: LOW
+    success: false
+    title: Runs with GID <= 10000
+  - category: Kubernetes Security Check
+    checkID: KSV030
+    description: According to pod security standard 'Seccomp', the RuntimeDefault
+      seccomp profile must be required, or allow specific additional profiles.
+    messages:
+    - Either Pod or Container should set 'securityContext.seccompProfile.type' to
+      'RuntimeDefault'
+    remediation: Set 'spec.securityContext.seccompProfile.type', 'spec.containers[*].securityContext.seccompProfile'
+      and 'spec.initContainers[*].securityContext.seccompProfile' to 'RuntimeDefault'
+      or undefined.
+    severity: LOW
+    success: false
+    title: Runtime/Default Seccomp profile not set
+  - category: Kubernetes Security Check
+    checkID: KSV104
+    description: A program inside the container can bypass Seccomp protection policies.
+    messages:
+    - container nginx-inseguro of pod nginx-inseguro in test-trivy-ns namespace should
+      specify a seccomp profile
+    remediation: Specify seccomp either by annotation or by seccomp profile type having
+      allowed values as per pod security standards
+    severity: MEDIUM
+    success: false
+    title: Seccomp policies disabled
+  - category: Kubernetes Security Check
+    checkID: KSV106
+    description: Containers must drop ALL capabilities, and are only permitted to
+      add back the NET_BIND_SERVICE capability.
+    messages:
+    - container should drop all
+    remediation: Set 'spec.containers[*].securityContext.capabilities.drop' to 'ALL'
+      and only add 'NET_BIND_SERVICE' to 'spec.containers[*].securityContext.capabilities.add'.
+    severity: LOW
+    success: false
+    title: Container capabilities must only include NET_BIND_SERVICE
+  - category: Kubernetes Security Check
+    checkID: KSV116
+    description: According to pod security standard 'Non-root groups', containers
+      should be forbidden from running with a root primary or supplementary GID.
+    messages:
+    - pod nginx-inseguro in test-trivy-ns namespace should set spec.securityContext.runAsGroup,
+      spec.securityContext.supplementalGroups[*] and spec.securityContext.fsGroup
+      to integer greater than 0
+    remediation: Set 'containers[].securityContext.runAsGroup' to a non-zero integer
+      or leave undefined.
+    severity: LOW
+    success: false
+    title: Runs with a root primary or supplementary GID
+  scanner:
+    name: Trivy
+    vendor: Aqua Security
+    version: 0.18.5
+  summary:
+    criticalCount: 0
+    highCount: 2
+    lowCount: 11
+    mediumCount: 3
+  updateTimestamp: "2024-06-09T16:59:25Z"

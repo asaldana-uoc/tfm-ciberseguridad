@@ -31,7 +31,6 @@ spec:
           - kyverno
           - falco
           - trivy-system
-          - monitoring
     generate:
       apiVersion: v1
       kind: ResourceQuota
@@ -61,7 +60,6 @@ spec:
           - kyverno
           - falco
           - trivy-system
-          - montoring
     generate:
       apiVersion: v1
       kind: LimitRange
