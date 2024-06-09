@@ -297,8 +297,8 @@ resource "aws_eks_node_group" "workers" {
   # Tiempo máximo permitido para finalizar las operaciones de creación, actualización y eliminación.
   timeouts {
     create = "10m"
-    update = "10m"
-    delete = "10m"
+    update = "30m"
+    delete = "30m"
   }
 }
 
